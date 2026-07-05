@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Cipher Wheel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-950:#120e0a;
+    --ink-900:#1c1611;
+    --ink-800:#2a2119;
+    --brass:#b8874a;
+    --brass-hi:#e9c988;
+    --brass-lo:#5c4322;
+    --parchment:#ece0c4;
+    --parchment-dim:#c9bb99;
+    --verdigris:#6f9c86;
+    --verdigris-hi:#9cc7b1;
+    --shadow:rgba(0,0,0,.55);
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    min-height:100%;
+    background:
+      radial-gradient(120% 90% at 50% -10%, #2a2018 0%, var(--ink-950) 55%),
+      var(--ink-950);
+    color:var(--parchment);
+    font-family:'IBM Plex Mono', monospace;
+    overflow-x:hidden;
+  }
+
+  .noise{
+    position:fixed; inset:0; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .page{
+    max-width:640px;
+    margin:0 auto;
+    padding:36px 20px 60px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    color:var(--verdigris-hi);
+    margin-bottom:10px;
+  }
+
+  h1{
+    font-family:'Cinzel', serif;
+    font-weight:700;
+    font-size:clamp(26px, 6vw, 34px);
+    letter-spacing:.03em;
+    margin:0 0 8px;
+    color:var(--parchment);
+    text-align:center;
+    text-shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+
+  .sub{
+    font-size:13px;
+    color:var(--parchment-dim);
+    text-align:center;
+    max-width:420px;
+    line-height:1.55;
+    margin:0 0 30px;
+  }
+
+  .wheel-wrap{
+    position:relative;
+    width:min(88vw, 420px);
+    aspect-ratio:1;
+    touch-action:none;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+
+  svg{ width:100%; height:100%; display:block; overflow:visible; }
+
+  .ring-shadow{ filter:drop-shadow(0 18px 30px var(--shadow)); }
+
+  #outerGroup{ cursor:grab; }
+  #outerGroup.dragging{ cursor:grabbing; }
+
+  .tick{ stroke:var(--ink-950); stroke-width:1; opacity:.55; }
+  .letter-glyph{
+    font-family:'Cinzel', serif;
+    font-weight:700;
+    fill:var(--ink-950);
+    text-anchor:middle;
+    dominant-baseline:central;
+  }
+  .symbol-glyph{
+    font-family:'IBM Plex Mono','Segoe UI Symbol', sans-serif;
+    fill:var(--ink-950);
+    text-anchor:middle;
+    dominant-baseline:central;
+    font-size:22px;
+  }
+
+  .index-mark{ fill:var(--verdigris-hi); }
+  .hub-boss{ fill:url(#hubGrad); stroke:var(--brass-lo); stroke-width:2; }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    margin-top:26px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    background:var(--ink-800);
+    color:var(--parchment);
+    border:1px solid var(--brass-lo);
+    padding:10px 16px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  button:hover{ border-color:var(--brass); color:var(--brass-hi); }
+  button:active{ transform:translateY(1px); }
+  button:focus-visible{ outline:2px solid var(--verdigris-hi); outline-offset:2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    #outerGroup{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="page">
+  <div class="wheel-wrap ring-shadow" id="wheelWrap" style="margin-top:20px;">
+    <svg viewBox="0 0 500 500" id="svg">
+      <defs>
+        <radialGradient id="parchGrad" cx="45%" cy="40%" r="65%">
+          <stop offset="0%" stop-color="#f4ead0"/>
+          <stop offset="70%" stop-color="#e6d8b6"/>
+          <stop offset="100%" stop-color="#cdbb92"/>
+        </radialGradient>
+        <linearGradient id="brassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#e9c988"/>
+          <stop offset="45%" stop-color="#b8874a"/>
+          <stop offset="100%" stop-color="#7a5a2e"/>
+        </linearGradient>
+        <radialGradient id="hubGrad" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#e9c988"/>
+          <stop offset="100%" stop-color="#8a6633"/>
+        </radialGradient>
+      </defs>
+
+      <!-- fixed base: brass bezel -->
+      <circle cx="250" cy="250" r="245" fill="url(#brassGrad)" />
+      <circle cx="250" cy="250" r="233" fill="var(--ink-950)" />
+
+      <!-- rotating outer ring (symbols) -->
+      <g id="outerGroup">
+        <circle cx="250" cy="250" r="228" fill="url(#brassGrad)" />
+        <circle cx="250" cy="250" r="178" fill="var(--ink-900)" />
+        <g id="ticks"></g>
+        <g id="symbols"></g>
+      </g>
+
+      <!-- fixed inner disc (letters) -->
+      <circle cx="250" cy="250" r="170" fill="url(#parchGrad)" stroke="var(--brass-lo)" stroke-width="2"/>
+      <g id="letters"></g>
+
+      <!-- fixed center hub -->
+      <circle class="hub-boss" cx="250" cy="250" r="26"/>
+      <circle cx="250" cy="250" r="10" fill="var(--ink-950)"/>
+
+      <!-- fixed index pointer at top, marks the reference position -->
+      <polygon class="index-mark" points="250,4 262,26 238,26"/>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button id="left">&#8592; Step</button>
+    <button id="reset">Reset</button>
+    <button id="shuffle">Shuffle</button>
+    <button id="right">Step &#8594;</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const ALPHABET = "MRATHSEYOIDNCULFGPBK".split('');
+  const SYMBOLS = ['▲','■','●','◆','★','▼','⬟','⬢','✦','✳','⊕','⊗','☾','☀','⚡','✚','◎','◈','⬣','✶'];
+  const N = ALPHABET.length;
+  const STEP = 360 / N;
+  const CX = 250, CY = 250;
+  const SYMBOL_R = 203;
+  const LETTER_R = 130;
+  const TICK_R1 = 225, TICK_R2 = 233;
+
+  const outerGroup = document.getElementById('outerGroup');
+  const ticksG = document.getElementById('ticks');
+  const lettersG = document.getElementById('letters');
+  const symbolsG = document.getElementById('symbols');
+  const wheelWrap = document.getElementById('wheelWrap');
+
+  function toXY(angleDeg, r){
+    const a = (angleDeg - 90) * Math.PI / 180;
+    return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+  }
+
+  // Build ticks
+  for(let i=0;i<N;i++){
+    const angle = i*STEP;
+    const [x1,y1] = toXY(angle, TICK_R1);
+    const [x2,y2] = toXY(angle, TICK_R2);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    line.setAttribute('class','tick');
+    ticksG.appendChild(line);
+  }
+
+  // Build symbols (rotate with the ring)
+  for(let j=0;j<N;j++){
+    const angle = j*STEP;
+    const [x,y] = toXY(angle, SYMBOL_R);
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',x); t.setAttribute('y',y);
+    t.setAttribute('class','symbol-glyph');
+    t.setAttribute('transform', `rotate(${angle} ${x} ${y})`);
+    t.textContent = SYMBOLS[j];
+    symbolsG.appendChild(t);
+  }
+
+  // Build letters (fixed, do not rotate, always upright)
+  for(let i=0;i<N;i++){
+    const angle = i*STEP;
+    const [x,y] = toXY(angle, LETTER_R);
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',x); t.setAttribute('y',y);
+    t.setAttribute('class','letter-glyph');
+    t.setAttribute('font-size', 20);
+    t.textContent = ALPHABET[i];
+    lettersG.appendChild(t);
+  }
+
+  let rotation = 0;       // current live rotation, degrees
+  let dragging = false;
+  let lastAngle = 0;
+
+  function applyRotation(r, animate){
+    outerGroup.style.transition = animate ? 'transform .5s cubic-bezier(.2,1.4,.4,1)' : 'none';
+    outerGroup.setAttribute('transform', `rotate(${r} ${CX} ${CY})`);
+  }
+
+  function pointerAngle(evt){
+    const rect = wheelWrap.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dx = evt.clientX - cx;
+    const dy = evt.clientY - cy;
+    return Math.atan2(dy,dx) * 180/Math.PI;
+  }
+
+  function currentShift(){
+    let s = Math.round(rotation / STEP) % N;
+    if(s<0) s += N;
+    return s;
+  }
+
+  function snapTo(shift, animate){
+    rotation = shift * STEP;
+    applyRotation(rotation, animate);
+  }
+
+  function onDown(evt){
+    dragging = true;
+    outerGroup.classList.add('dragging');
+    lastAngle = pointerAngle(evt);
+    outerGroup.style.transition = 'none';
+    evt.preventDefault();
+  }
+
+  function onMove(evt){
+    if(!dragging) return;
+    const a = pointerAngle(evt);
+    let delta = a - lastAngle;
+    if(delta > 180) delta -= 360;
+    if(delta < -180) delta += 360;
+    rotation += delta;
+    lastAngle = a;
+    applyRotation(rotation, false);
+  }
+
+  function onUp(){
+    if(!dragging) return;
+    dragging = false;
+    outerGroup.classList.remove('dragging');
+    const shift = Math.round(rotation / STEP);
+    snapTo(((shift % N) + N) % N, true);
+  }
+
+  wheelWrap.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
+
+  document.getElementById('left').addEventListener('click', ()=>{
+    const shift = ((currentShift() - 1) % N + N) % N;
+    snapTo(shift, true);
+  });
+  document.getElementById('right').addEventListener('click', ()=>{
+    const shift = (currentShift() + 1) % N;
+    snapTo(shift, true);
+  });
+  document.getElementById('reset').addEventListener('click', ()=>{
+    snapTo(0, true);
+  });
+  document.getElementById('shuffle').addEventListener('click', ()=>{
+    const shift = Math.floor(Math.random()*N);
+    snapTo(shift, true);
+  });
+
+  // init
+  snapTo(0, false);
+})();
+</script>
+</body>
+</html>
