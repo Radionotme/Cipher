@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-<title>Cipher Wheel</title>
+<title>Stone Dial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -27,17 +27,33 @@
     margin:0;
     min-height:100%;
     background:
-      radial-gradient(120% 90% at 50% -10%, #2a2018 0%, var(--ink-950) 55%),
-      var(--ink-950);
+      radial-gradient(120% 90% at 50% -10%, #3a352d 0%, transparent 55%),
+      radial-gradient(90% 70% at 15% 90%, #2c2721 0%, transparent 60%),
+      radial-gradient(90% 70% at 90% 85%, #241f19 0%, transparent 60%),
+      linear-gradient(155deg, #33302a 0%, #221e19 45%, #171410 100%);
     color:var(--parchment);
     font-family:'IBM Plex Mono', monospace;
     overflow-x:hidden;
+    position:relative;
   }
 
-  .noise{
-    position:fixed; inset:0; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  .stone-grain{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    opacity:.65; mix-blend-mode:overlay;
+    background-repeat:repeat;
   }
+
+  html::after{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      repeating-linear-gradient(100deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 60px, rgba(0,0,0,.22) 61px, rgba(0,0,0,0) 64px),
+      repeating-linear-gradient(15deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 90px, rgba(0,0,0,.18) 91px, rgba(0,0,0,0) 95px),
+      radial-gradient(38% 22% at 22% 30%, rgba(0,0,0,.16), transparent 70%),
+      radial-gradient(30% 18% at 78% 62%, rgba(0,0,0,.14), transparent 70%);
+  }
+
+  .page{ position:relative; z-index:1; }
 
   .page{
     max-width:640px;
@@ -142,7 +158,7 @@
 </style>
 </head>
 <body>
-<div class="noise"></div>
+<div class="stone-grain" id="stoneGrain"></div>
 <div class="page">
   <div class="wheel-wrap ring-shadow" id="wheelWrap" style="margin-top:20px;">
     <svg viewBox="0 0 500 500" id="svg">
@@ -193,9 +209,33 @@
     <button id="reset">Reset</button>
     <button id="shuffle">Shuffle</button>
     <button id="right">Step &#8594;</button>
+    <button id="soundToggle" aria-pressed="true">&#128266; Sound</button>
   </div>
 </div>
 
+<script>
+(function(){
+  // Build a tileable grain texture on a canvas — far more reliable across
+  // browsers (especially iOS Safari) than an SVG feTurbulence data-URI.
+  const size = 200;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const imgData = ctx.createImageData(size, size);
+  for(let i = 0; i < imgData.data.length; i += 4){
+    const v = Math.random() * 255;
+    imgData.data[i] = v;
+    imgData.data[i+1] = v;
+    imgData.data[i+2] = v;
+    imgData.data[i+3] = 255;
+  }
+  ctx.putImageData(imgData, 0, 0);
+  const dataUrl = canvas.toDataURL('image/png');
+  const grain = document.getElementById('stoneGrain');
+  grain.style.backgroundImage = `url(${dataUrl})`;
+  grain.style.backgroundSize = size + 'px ' + size + 'px';
+})();
+</script>
 <script>
 (function(){
   const ALPHABET = "MRATHSEYOIDNCULFGPBK".split('');
@@ -254,7 +294,84 @@
     lettersG.appendChild(t);
   }
 
-  let rotation = 0;       // current live rotation, degrees
+  // ---- Stone grinding sound engine (Web Audio, synthesized — no audio files) ----
+  let audioCtx = null;
+  let noiseGain = null;
+  let noiseFilter = null;
+  let soundEnabled = true;
+  const soundBtn = document.getElementById('soundToggle');
+
+  function makeNoiseBuffer(ctx, seconds){
+    const buf = ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i] = Math.random()*2 - 1;
+    return buf;
+  }
+
+  function ensureAudio(){
+    if(!soundEnabled) return;
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = audioCtx.createBufferSource();
+      src.buffer = makeNoiseBuffer(audioCtx, 2);
+      src.loop = true;
+
+      noiseFilter = audioCtx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = 300;
+      noiseFilter.Q.value = 0.7;
+
+      noiseGain = audioCtx.createGain();
+      noiseGain.gain.value = 0;
+
+      src.connect(noiseFilter).connect(noiseGain).connect(audioCtx.destination);
+      src.start(0);
+    }
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+  }
+
+  function updateGrindSound(speed){
+    if(!soundEnabled || !noiseGain) return;
+    const now = audioCtx.currentTime;
+    const clamped = Math.min(speed, 14);
+    const targetGain = Math.min(0.22, 0.03 + clamped * 0.014);
+    const targetFreq = 220 + clamped * 55 + (Math.random()*40 - 20);
+    noiseGain.gain.setTargetAtTime(targetGain, now, 0.04);
+    noiseFilter.frequency.setTargetAtTime(targetFreq, now, 0.06);
+  }
+
+  function stopGrindSound(){
+    if(!soundEnabled || !noiseGain || !audioCtx) return;
+    noiseGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.18);
+  }
+
+  function playThunk(){
+    if(!soundEnabled || !audioCtx) return;
+    const dur = 0.18;
+    const buf = makeNoiseBuffer(audioCtx, dur);
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    const filt = audioCtx.createBiquadFilter();
+    filt.type = 'lowpass';
+    filt.frequency.value = 220;
+    const g = audioCtx.createGain();
+    const now = audioCtx.currentTime;
+    g.gain.setValueAtTime(0.35, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    src.connect(filt).connect(g).connect(audioCtx.destination);
+    src.start(now);
+    src.stop(now + dur);
+  }
+
+  soundBtn.addEventListener('click', ()=>{
+    soundEnabled = !soundEnabled;
+    soundBtn.textContent = (soundEnabled ? '\u{1F50A} Sound' : '\u{1F507} Muted');
+    soundBtn.setAttribute('aria-pressed', String(soundEnabled));
+    if(!soundEnabled && noiseGain && audioCtx) noiseGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+  });
+  // ---- end sound engine ----
+
+
   let dragging = false;
   let lastAngle = 0;
 
@@ -288,6 +405,7 @@
     outerGroup.classList.add('dragging');
     lastAngle = pointerAngle(evt);
     outerGroup.style.transition = 'none';
+    ensureAudio();
     evt.preventDefault();
   }
 
@@ -300,14 +418,17 @@
     rotation += delta;
     lastAngle = a;
     applyRotation(rotation, false);
+    updateGrindSound(Math.abs(delta));
   }
 
   function onUp(){
     if(!dragging) return;
     dragging = false;
     outerGroup.classList.remove('dragging');
+    stopGrindSound();
     const shift = Math.round(rotation / STEP);
     snapTo(((shift % N) + N) % N, true);
+    setTimeout(playThunk, 480);
   }
 
   wheelWrap.addEventListener('pointerdown', onDown);
@@ -316,17 +437,21 @@
   window.addEventListener('pointercancel', onUp);
 
   document.getElementById('left').addEventListener('click', ()=>{
+    ensureAudio(); updateGrindSound(6); stopGrindSound(); setTimeout(playThunk, 480);
     const shift = ((currentShift() - 1) % N + N) % N;
     snapTo(shift, true);
   });
   document.getElementById('right').addEventListener('click', ()=>{
+    ensureAudio(); updateGrindSound(6); stopGrindSound(); setTimeout(playThunk, 480);
     const shift = (currentShift() + 1) % N;
     snapTo(shift, true);
   });
   document.getElementById('reset').addEventListener('click', ()=>{
+    ensureAudio(); updateGrindSound(6); stopGrindSound(); setTimeout(playThunk, 480);
     snapTo(0, true);
   });
   document.getElementById('shuffle').addEventListener('click', ()=>{
+    ensureAudio(); updateGrindSound(10); stopGrindSound(); setTimeout(playThunk, 480);
     const shift = Math.floor(Math.random()*N);
     snapTo(shift, true);
   });
