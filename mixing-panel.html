@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Alembic Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-950:#120e0a;
+    --ink-900:#1c1611;
+    --ink-800:#2a2119;
+    --brass:#b8874a;
+    --brass-hi:#e9c988;
+    --brass-lo:#5c4322;
+    --parchment:#ece0c4;
+    --parchment-dim:#c9bb99;
+    --fire:#ff6a3d;
+    --water:#4fb8ff;
+    --earth:#8a6b3f;
+    --air:#dfeeff;
+    --shadow:rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; min-height:100%;
+    background:
+      radial-gradient(120% 90% at 50% -10%, #3a352d 0%, transparent 55%),
+      radial-gradient(90% 70% at 15% 90%, #2c2721 0%, transparent 60%),
+      radial-gradient(90% 70% at 90% 85%, #241f19 0%, transparent 60%),
+      linear-gradient(155deg, #33302a 0%, #221e19 45%, #171410 100%);
+    color:var(--parchment);
+    font-family:'IBM Plex Mono', monospace;
+    overflow-x:hidden;
+    position:relative;
+  }
+  .stone-grain{ position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.6; mix-blend-mode:overlay; background-repeat:repeat; }
+  .page{ position:relative; z-index:1; max-width:600px; margin:0 auto; padding:34px 20px 60px; display:flex; flex-direction:column; align-items:center; }
+
+  .eyebrow{ font-size:11px; letter-spacing:.32em; text-transform:uppercase; color:var(--brass-hi); margin-bottom:8px; }
+  h1{ font-family:'Cinzel', serif; font-weight:700; font-size:clamp(24px,6vw,30px); margin:0 0 8px; text-align:center; }
+  .sub{ font-size:12.5px; color:var(--parchment-dim); text-align:center; max-width:380px; line-height:1.55; margin:0 0 30px; }
+
+  .rig{
+    display:flex; align-items:flex-end; justify-content:center; gap:22px;
+    background:linear-gradient(180deg, #241f19, #17140f);
+    border:2px solid var(--brass-lo);
+    border-radius:16px;
+    padding:26px 22px 20px;
+    box-shadow:0 18px 30px var(--shadow), inset 0 0 30px rgba(0,0,0,.5);
+  }
+
+  .lever{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .lever-icon{ width:30px; height:30px; }
+  .track{
+    position:relative;
+    width:34px; height:210px;
+    background:linear-gradient(180deg, #0d0b08, #1a1611);
+    border:1px solid var(--brass-lo);
+    border-radius:8px;
+    touch-action:none;
+    cursor:grab;
+  }
+  .track.dragging{ cursor:grabbing; }
+  .notch{
+    position:absolute; left:4px; right:4px; height:1px;
+    background:rgba(184,135,74,.35);
+  }
+  .fill{
+    position:absolute; left:3px; right:3px; bottom:3px;
+    border-radius:5px;
+    transition:height .12s ease;
+  }
+  .bead{
+    position:absolute; left:50%; width:26px; height:14px;
+    transform:translate(-50%,50%);
+    background:linear-gradient(180deg, var(--brass-hi), var(--brass));
+    border:1px solid var(--brass-lo);
+    border-radius:4px;
+    box-shadow:0 2px 4px rgba(0,0,0,.5);
+  }
+  .lever-label{ font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--parchment-dim); }
+
+  .basin-wrap{ margin-top:34px; display:flex; flex-direction:column; align-items:center; }
+  .basin{
+    width:180px; height:180px; border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #2a2119, #14100c 70%);
+    border:6px solid var(--brass);
+    box-shadow:0 14px 26px var(--shadow), inset 0 0 30px rgba(0,0,0,.6);
+    position:relative;
+    overflow:hidden;
+  }
+  .brew{
+    position:absolute; inset:8px; border-radius:50%;
+    filter:blur(2px) saturate(1.1);
+    transition:background 0.4s ease, box-shadow .4s ease;
+  }
+  .bubble{
+    position:absolute; bottom:-10px; border-radius:50%;
+    background:rgba(255,255,255,.35);
+    animation:rise linear infinite;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) scale(1); opacity:.7; }
+    100%{ transform:translateY(-170px) scale(.4); opacity:0; }
+  }
+  .status{
+    margin-top:16px; font-size:13px;
+    text-align:center; min-height:16px; opacity:0; transition:opacity .4s ease;
+    letter-spacing:.03em; max-width:320px; line-height:1.5;
+  }
+  .status.show{ opacity:1; }
+  .status.success{ color:var(--brass-hi); }
+  .status.fail{ color:#a8d98a; }
+
+  .btn-row{ margin-top:22px; display:flex; gap:12px; }
+
+  #submitBtn, #resetBtn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    background:var(--ink-800);
+    color:var(--parchment);
+    border:1px solid var(--brass-lo);
+    padding:12px 26px;
+    border-radius:4px;
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease, opacity .15s ease;
+  }
+  #submitBtn:hover, #resetBtn:hover{ border-color:var(--brass); color:var(--brass-hi); }
+  #submitBtn:active, #resetBtn:active{ transform:translateY(1px); }
+  #submitBtn:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+    border-color:var(--brass-lo);
+    color:var(--parchment-dim);
+  }
+  #submitBtn:disabled:hover{ border-color:var(--brass-lo); color:var(--parchment-dim); }
+  #resetBtn{ border-color:#6f5233; }
+
+  @media (prefers-reduced-motion: reduce){ .bubble{ animation:none; } }
+</style>
+</head>
+<body>
+<div class="stone-grain" id="stoneGrain"></div>
+<div class="page">
+  <div class="eyebrow">Alembic Chamber</div>
+  <h1>The Mixing Panel</h1>
+  <p class="sub">Drag each lever to set the parts of Fire, Water, Earth and Air, then submit the mixture. Choose carefully — a bad brew bites back.</p>
+
+  <div class="rig" id="rig">
+    <div class="lever" data-el="fire">
+      <svg class="lever-icon" viewBox="0 0 24 24"><polygon points="12,3 21,20 3,20" fill="#ff6a3d"/></svg>
+      <div class="track" data-el="fire"><div class="fill" id="fillfire" style="background:var(--fire)"></div><div class="bead" id="beadfire"></div></div>
+      <div class="lever-label">Fire</div>
+    </div>
+    <div class="lever" data-el="water">
+      <svg class="lever-icon" viewBox="0 0 24 24"><polygon points="12,20 3,4 21,4" fill="#4fb8ff"/></svg>
+      <div class="track" data-el="water"><div class="fill" id="fillwater" style="background:var(--water)"></div><div class="bead" id="beadwater"></div></div>
+      <div class="lever-label">Water</div>
+    </div>
+    <div class="lever" data-el="earth">
+      <svg class="lever-icon" viewBox="0 0 24 24">
+        <polygon points="12,20 3,4 21,4" fill="#8a6b3f"/>
+        <line x1="5" y1="8" x2="19" y2="8" stroke="#17140f" stroke-width="2"/>
+      </svg>
+      <div class="track" data-el="earth"><div class="fill" id="fillearth" style="background:var(--earth)"></div><div class="bead" id="beadearth"></div></div>
+      <div class="lever-label">Earth</div>
+    </div>
+    <div class="lever" data-el="air">
+      <svg class="lever-icon" viewBox="0 0 24 24">
+        <polygon points="12,3 21,20 3,20" fill="#dfeeff"/>
+        <line x1="5" y1="15" x2="19" y2="15" stroke="#17140f" stroke-width="2"/>
+      </svg>
+      <div class="track" data-el="air"><div class="fill" id="fillair" style="background:var(--air)"></div><div class="bead" id="beadair"></div></div>
+      <div class="lever-label">Air</div>
+    </div>
+  </div>
+
+  <div class="basin-wrap">
+    <div class="basin"><div class="brew" id="brew"></div><div id="bubbles"></div></div>
+    <div class="btn-row">
+      <button id="submitBtn">Submit Mixture</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const size = 200;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const c = canvas.getContext('2d');
+  const img = c.createImageData(size, size);
+  for(let i=0;i<img.data.length;i+=4){
+    const v = Math.random()*255;
+    img.data[i]=v; img.data[i+1]=v; img.data[i+2]=v; img.data[i+3]=255;
+  }
+  c.putImageData(img,0,0);
+  const grain = document.getElementById('stoneGrain');
+  grain.style.backgroundImage = `url(${canvas.toDataURL('image/png')})`;
+  grain.style.backgroundSize = size+'px '+size+'px';
+})();
+
+(function(){
+  const ELEMENTS = ['fire','water','earth','air'];
+  const COLORS = { fire:[255,106,61], water:[79,184,255], earth:[138,107,63], air:[223,238,255] };
+  // Placeholder answer, matching the fresco clue described in the room text.
+  // Change these four numbers to re-key the puzzle for a different clue.
+  const TARGET = { fire:3, water:0, earth:2, air:1 };
+  const MAX = 6; // notches per lever, 0..6
+
+  const values = { fire:0, water:0, earth:0, air:0 };
+
+  let audioCtx = null;
+  function ensureAudio(){
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  function click(){
+    ensureAudio();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'square'; o.frequency.value = 520;
+    g.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.05);
+  }
+  function successChime(){
+    ensureAudio();
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((f,i)=>{
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      const t = audioCtx.currentTime + i*0.11;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.12, t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t+0.9);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(t); o.stop(t+0.9);
+    });
+  }
+  function failHiss(){
+    ensureAudio();
+    const dur = 0.5;
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate*dur, audioCtx.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i] = Math.random()*2-1;
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    const filt = audioCtx.createBiquadFilter();
+    filt.type = 'highpass'; filt.frequency.value = 1800;
+    const g = audioCtx.createGain();
+    const t = audioCtx.currentTime;
+    g.gain.setValueAtTime(0.28, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+    src.connect(filt).connect(g).connect(audioCtx.destination);
+    src.start(t); src.stop(t+dur);
+
+    const o = audioCtx.createOscillator();
+    const g2 = audioCtx.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(140, t);
+    o.frequency.exponentialRampToValueAtTime(70, t+dur);
+    g2.gain.setValueAtTime(0.09, t);
+    g2.gain.exponentialRampToValueAtTime(0.001, t+dur);
+    o.connect(g2).connect(audioCtx.destination);
+    o.start(t); o.stop(t+dur);
+  }
+  function rollPoisonDamage(){
+    const a = 1 + Math.floor(Math.random()*6);
+    const b = 1 + Math.floor(Math.random()*6);
+    return { a, b, total: a+b };
+  }
+
+  const renders = {};
+
+  function setupTrack(el){
+    const track = document.querySelector(`.track[data-el="${el}"]`);
+    const fill = document.getElementById('fill'+el);
+    const bead = document.getElementById('bead'+el);
+    let dragging = false;
+
+    function render(){
+      const v = values[el];
+      const pct = v / MAX;
+      fill.style.height = (pct*100) + '%';
+      bead.style.bottom = (pct*100) + '%';
+    }
+    renders[el] = render;
+
+    function setFromClientY(clientY){
+      if(submitBtn.disabled) return;
+      const rect = track.getBoundingClientRect();
+      let pct = 1 - (clientY - rect.top) / rect.height;
+      pct = Math.max(0, Math.min(1, pct));
+      const v = Math.round(pct * MAX);
+      if(v !== values[el]){
+        values[el] = v;
+        click();
+        render();
+        updateBasin();
+      }
+    }
+
+    track.addEventListener('pointerdown', (e)=>{
+      if(submitBtn.disabled) return;
+      dragging = true;
+      track.classList.add('dragging');
+      ensureAudio();
+      setFromClientY(e.clientY);
+      e.preventDefault();
+    });
+    window.addEventListener('pointermove', (e)=>{
+      if(!dragging) return;
+      setFromClientY(e.clientY);
+    });
+    window.addEventListener('pointerup', ()=>{
+      dragging = false;
+      track.classList.remove('dragging');
+    });
+
+    render();
+  }
+
+  const submitBtn = document.getElementById('submitBtn');
+  ELEMENTS.forEach(setupTrack);
+
+  const brew = document.getElementById('brew');
+  const bubblesWrap = document.getElementById('bubbles');
+  const status = document.getElementById('status');
+  let solved = false;
+
+  function updateBasin(){
+    const total = ELEMENTS.reduce((s,e)=>s+values[e],0);
+    let r=20,g=20,b=20;
+    if(total > 0){
+      r = ELEMENTS.reduce((s,e)=>s + COLORS[e][0]*values[e], 0) / total;
+      g = ELEMENTS.reduce((s,e)=>s + COLORS[e][1]*values[e], 0) / total;
+      b = ELEMENTS.reduce((s,e)=>s + COLORS[e][2]*values[e], 0) / total;
+    }
+
+    // Purely aesthetic: reflects what's currently in the basin, not correctness.
+    brew.style.background = `radial-gradient(circle at 45% 40%, rgba(${r|0},${g|0},${b|0},0.65), rgba(${r|0},${g|0},${b|0},0.15) 70%)`;
+    brew.style.boxShadow = `0 0 20px rgba(${r|0},${g|0},${b|0},0.25)`;
+
+    // bubble density scales gently with total parts
+    bubblesWrap.innerHTML = '';
+    const count = 4 + total;
+    for(let i=0;i<count;i++){
+      const b2 = document.createElement('div');
+      b2.className = 'bubble';
+      const s = 4 + Math.random()*8;
+      b2.style.width = s+'px'; b2.style.height = s+'px';
+      b2.style.left = (10 + Math.random()*80) + '%';
+      b2.style.animationDuration = (3 + Math.random()*3) + 's';
+      b2.style.animationDelay = (Math.random()*3) + 's';
+      bubblesWrap.appendChild(b2);
+    }
+  }
+
+  function submitMixture(){
+    ensureAudio();
+    const total = ELEMENTS.reduce((s,e)=>s+values[e],0);
+    const isMatch = ELEMENTS.every(e => values[e] === TARGET[e]) && total > 0;
+
+    status.classList.remove('success','fail');
+    submitBtn.disabled = true;
+
+    if(isMatch){
+      solved = true;
+      successChime();
+      brew.style.background = `radial-gradient(circle at 45% 40%, rgba(255,238,190,0.9), rgba(233,201,136,0.3) 70%)`;
+      brew.style.boxShadow = `0 0 60px rgba(255,225,160,0.85)`;
+      status.textContent = 'The mixture stabilizes with a soft golden light.';
+      status.classList.add('success','show');
+    } else {
+      solved = false;
+      failHiss();
+      const roll = rollPoisonDamage();
+      brew.style.background = `radial-gradient(circle at 45% 40%, rgba(120,200,90,0.75), rgba(60,90,40,0.25) 70%)`;
+      brew.style.boxShadow = `0 0 40px rgba(120,200,90,0.6)`;
+      status.textContent = `The mixture curdles and hisses — a plume of caustic vapor bursts free. Poison damage: ${roll.a} + ${roll.b} = ${roll.total}.`;
+      status.classList.add('fail','show');
+    }
+  }
+
+  function resetMixture(){
+    ELEMENTS.forEach(e=>{
+      values[e] = 0;
+      renders[e]();
+    });
+    status.textContent = '';
+    status.classList.remove('show','success','fail');
+    solved = false;
+    submitBtn.disabled = false;
+    updateBasin();
+  }
+
+  submitBtn.addEventListener('click', submitMixture);
+  document.getElementById('resetBtn').addEventListener('click', resetMixture);
+
+  updateBasin();
+})();
+</script>
+</body>
+</html>
