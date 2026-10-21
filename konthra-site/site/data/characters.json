@@ -213,7 +213,7 @@
   "currentLocation": "",
   "status": "Active",
   "statusKind": "active",
-  "faction": "Maelstrom’s forces",
+  "faction": "Storm spirits",
   "disposition": "Hostile",
   "threatLevel": "Extreme",
   "summary": "A powerful storm entity whose return threatens communities across Konthra.",
@@ -607,11 +607,9 @@
  {
   "id": "kon-026",
   "name": "Zephyr",
-  "aliases": [
-   "Zephy (variant spelling in notes)"
-  ],
+  "aliases": [],
   "species": "Storm spirit",
-  "role": "Formerly bound storm spirit",
+  "role": "Bound storm spirit",
   "portrait": "",
   "firstSession": "",
   "firstLocation": "",
@@ -633,7 +631,7 @@
   "name": "Tempest",
   "aliases": [],
   "species": "Storm spirit",
-  "role": "Formerly bound storm spirit",
+  "role": "Bound storm spirit",
   "portrait": "",
   "firstSession": "",
   "firstLocation": "",
