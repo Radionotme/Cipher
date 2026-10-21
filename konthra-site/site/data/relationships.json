@@ -1,0 +1,184 @@
+[
+ {
+  "id": "REL-004",
+  "source": "kon-001",
+  "target": "kon-034",
+  "type": "Hopes to reconnect with",
+  "label": "Hopes to reconnect with"
+ },
+ {
+  "id": "REL-005",
+  "source": "kon-002",
+  "target": "kon-018",
+  "type": "Former partner of",
+  "label": "Former partner of"
+ },
+ {
+  "id": "REL-006",
+  "source": "kon-002",
+  "target": "kon-019",
+  "type": "Friend of",
+  "label": "Friend of"
+ },
+ {
+  "id": "REL-007",
+  "source": "kon-002",
+  "target": "kon-016",
+  "type": "Has warehouse space requested by",
+  "label": "Has warehouse space requested by"
+ },
+ {
+  "id": "REL-008",
+  "source": "kon-003",
+  "target": "kon-010",
+  "type": "Patron of",
+  "label": "Patron of"
+ },
+ {
+  "id": "REL-010",
+  "source": "kon-005",
+  "target": "kon-035",
+  "type": "Adopted by",
+  "label": "Adopted by"
+ },
+ {
+  "id": "REL-011",
+  "source": "kon-005",
+  "target": "kon-036",
+  "type": "Adopted by",
+  "label": "Adopted by"
+ },
+ {
+  "id": "REL-012",
+  "source": "kon-005",
+  "target": "kon-037",
+  "type": "Sibling of",
+  "label": "Sibling of"
+ },
+ {
+  "id": "REL-013",
+  "source": "kon-005",
+  "target": "kon-038",
+  "type": "Sibling of",
+  "label": "Sibling of"
+ },
+ {
+  "id": "REL-014",
+  "source": "kon-005",
+  "target": "kon-039",
+  "type": "Sibling of",
+  "label": "Sibling of"
+ },
+ {
+  "id": "REL-015",
+  "source": "kon-005",
+  "target": "kon-009",
+  "type": "Locket may help contain",
+  "label": "Locket may help contain"
+ },
+ {
+  "id": "REL-016",
+  "source": "kon-006",
+  "target": "kon-044",
+  "type": "Carries / trusts",
+  "label": "Carries / trusts"
+ },
+ {
+  "id": "REL-018",
+  "source": "kon-007",
+  "target": "kon-008",
+  "type": "Longtime ally of",
+  "label": "Longtime ally of"
+ },
+ {
+  "id": "REL-019",
+  "source": "kon-007",
+  "target": "kon-011",
+  "type": "Longtime ally of",
+  "label": "Longtime ally of"
+ },
+ {
+  "id": "REL-023",
+  "source": "kon-008",
+  "target": "kon-017",
+  "type": "Employs",
+  "label": "Employs"
+ },
+ {
+  "id": "REL-025",
+  "source": "kon-009",
+  "target": "kon-007",
+  "type": "Was bound with help from",
+  "label": "Was bound with help from"
+ },
+ {
+  "id": "REL-026",
+  "source": "kon-009",
+  "target": "kon-008",
+  "type": "Was bound with help from",
+  "label": "Was bound with help from"
+ },
+ {
+  "id": "REL-027",
+  "source": "kon-009",
+  "target": "kon-011",
+  "type": "Was bound with help from",
+  "label": "Was bound with help from"
+ },
+ {
+  "id": "REL-032",
+  "source": "kon-015",
+  "target": "kon-007",
+  "type": "Feeds information between",
+  "label": "Feeds information between"
+ },
+ {
+  "id": "REL-033",
+  "source": "kon-015",
+  "target": "kon-014",
+  "type": "Feeds information between",
+  "label": "Feeds information between"
+ },
+ {
+  "id": "REL-035",
+  "source": "kon-017",
+  "target": "kon-008",
+  "type": "Acts for",
+  "label": "Acts for"
+ },
+ {
+  "id": "REL-036",
+  "source": "kon-018",
+  "target": "kon-019",
+  "type": "Travelled with",
+  "label": "Travelled with"
+ },
+ {
+  "id": "REL-042",
+  "source": "kon-028",
+  "target": "kon-029",
+  "type": "Fiancé of",
+  "label": "Fiancé of"
+ },
+ {
+  "id": "REL-043",
+  "source": "kon-029",
+  "target": "kon-014",
+  "type": "Received comfort from",
+  "label": "Received comfort from"
+ },
+ {
+  "id": "REL-044",
+  "source": "kon-030",
+  "target": "kon-014",
+  "type": "Served in household of",
+  "label": "Served in household of"
+ },
+ {
+  "id": "REL-046",
+  "source": "kon-033",
+  "target": "kon-014",
+  "type": "Was referenced in a proposed scheme by",
+  "label": "Was referenced in a proposed scheme by"
+ }
+]

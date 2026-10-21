@@ -1,0 +1,49 @@
+:root{--bg:#14121a;--panel:#1e1b26;--line:#3a3150;--violet:#5b4a7e;--vtext:#b39cf0;--gold:#d4b06a;--text:#e6e0f0;--muted:#b3abc2;--dim:#9a90ae}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.45 "EB Garamond",Georgia,serif}
+h1,h2,.lab,.b{font-family:Cinzel,Georgia,serif}
+.lab{font-size:13px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.top{text-align:center;padding:48px 16px 8px}
+h1{color:var(--gold);font-size:clamp(30px,6vw,46px);margin:6px 0;letter-spacing:.04em}
+.sub{color:var(--muted);font-style:italic;margin:0}
+main{max-width:1280px;margin:0 auto;padding:16px 24px 56px}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:20px 0 24px}
+input,select,button{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--violet);border-radius:999px;padding:8px 16px;min-height:44px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button[aria-pressed=true]{color:var(--gold);border-color:var(--gold)}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.count{margin-left:auto;color:var(--dim)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;text-decoration:none;color:inherit}
+.card:hover{border-color:var(--gold)}
+.por{display:flex;align-items:center;justify-content:center;background:#2a2536 center/cover;border:1px solid var(--violet);color:var(--gold);font-family:Cinzel,serif;font-size:34px;border-radius:6px;height:120px}
+.card h2{color:var(--gold);font-size:18px;margin:12px 0 2px;letter-spacing:.04em}
+.role{color:var(--muted);min-height:46px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}
+.b{display:inline-block;font-size:14px;padding:2px 10px;border:1px solid currentColor;border-radius:999px;letter-spacing:.05em}
+.active{color:#8fcf9f}.dead{color:#e39a9a}.unknown{color:#b8b0c8}
+.fc{color:var(--vtext);font-size:15px;text-align:right}
+.empty{text-align:center;color:var(--muted);font-style:italic}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--gold);border-radius:14px;padding:0;width:min(980px,94vw);max-height:92vh;overflow:auto;box-shadow:0 20px 60px #000}
+dialog::backdrop{background:#000c}
+.m{display:grid;grid-template-columns:300px 1fr;gap:32px;padding:32px}
+.m h2{color:var(--gold);font-size:36px;margin:0;letter-spacing:.04em}
+.m .por{height:300px;font-size:72px}
+.m .top2{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.close{min-width:44px;padding:8px}
+.f{border-top:1px solid var(--line);padding:10px 0}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.chip{display:inline-block;margin:0 6px 6px 0;padding:6px 14px;border:1px solid var(--violet);border-radius:999px;color:var(--vtext);text-decoration:none;font-size:16px}
+.chip:hover{border-color:var(--gold)}
+.summ{font-size:19px}
+.ali{font-style:italic;color:var(--muted)}
+#cy{height:170px;width:100%}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+@media(max-width:700px){
+ main{padding:12px 14px 40px}
+ .count{margin-left:0;width:100%}
+ dialog{width:100vw;max-width:100vw;max-height:calc(100dvh - 20px);margin:20px 0 0;border-radius:18px 18px 0 0;border-bottom:0}
+ .m{grid-template-columns:1fr;gap:16px;padding:16px 18px 28px}
+ .m .por{height:140px;font-size:48px}.m h2{font-size:28px}
+}
