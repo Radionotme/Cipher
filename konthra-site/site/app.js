@@ -11,9 +11,19 @@
   let chars = [], rels = [], byId = {}, filter = "all", cy = null, pushed = false;
   const modal = $("#modal");
 
-  const portrait = (c) => c.portrait && /^(https?:\/\/|assets\/)/.test(c.portrait)
-    ? `<div class="por" role="img" aria-label="Portrait of ${esc(c.name)}" style="background-image:url('${esc(c.portrait)}')"></div>`
-    : `<div class="por" aria-hidden="true">${esc(init(c.name))}</div>`;
+  const portrait = (c) => {
+    const ini = esc(init(c.name));
+    const ok = c.portrait && /^(https?:\/\/|assets\/)/.test(c.portrait);
+    return `<div class="por" data-init="${ini}">${ok
+      ? `<img src="${esc(c.portrait)}" alt="Portrait of ${esc(c.name)}" loading="lazy" decoding="async">`
+      : `<span aria-hidden="true">${ini}</span>`}</div>`;
+  };
+  // If an image fails to load (typo in the filename, bad URL), fall back to initials.
+  document.addEventListener("error", (e) => {
+    const img = e.target;
+    if (img.tagName === "IMG" && img.parentElement?.classList.contains("por"))
+      img.parentElement.innerHTML = `<span aria-hidden="true">${img.parentElement.dataset.init}</span>`;
+  }, true);
 
   function renderGrid() {
     const q = $("#q").value.trim().toLowerCase(), fac = $("#fac").value;
