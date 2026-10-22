@@ -7,7 +7,7 @@
   ],
   "species": "Human",
   "role": "Player Character",
-  "portrait": "",
+  "portrait": "assets/portraits/kon-001.webp",
   "firstSession": "",
   "firstLocation": "Everny",
   "currentLocation": "With the party",
