@@ -35,41 +35,6 @@
   "label": "Patron of"
  },
  {
-  "id": "REL-010",
-  "source": "kon-005",
-  "target": "kon-035",
-  "type": "Adopted by",
-  "label": "Adopted by"
- },
- {
-  "id": "REL-011",
-  "source": "kon-005",
-  "target": "kon-036",
-  "type": "Adopted by",
-  "label": "Adopted by"
- },
- {
-  "id": "REL-012",
-  "source": "kon-005",
-  "target": "kon-037",
-  "type": "Sibling of",
-  "label": "Sibling of"
- },
- {
-  "id": "REL-013",
-  "source": "kon-005",
-  "target": "kon-038",
-  "type": "Sibling of",
-  "label": "Sibling of"
- },
- {
-  "id": "REL-014",
-  "source": "kon-005",
-  "target": "kon-039",
-  "type": "Sibling of",
-  "label": "Sibling of"
- },
- {
   "id": "REL-015",
   "source": "kon-005",
   "target": "kon-009",
@@ -180,5 +145,12 @@
   "target": "kon-014",
   "type": "Was referenced in a proposed scheme by",
   "label": "Was referenced in a proposed scheme by"
+ },
+ {
+  "id": "REL-052",
+  "source": "kon-048",
+  "target": "kon-049",
+  "type": "Partner in crime of",
+  "label": "Partner in crime of"
  }
 ]
