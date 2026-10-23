@@ -152,5 +152,68 @@
   "target": "kon-049",
   "type": "Partner in crime of",
   "label": "Partner in crime of"
+ },
+ {
+  "id": "REL-054",
+  "source": "kon-050",
+  "target": "kon-001",
+  "type": "Rescued by",
+  "label": "Rescued by"
+ },
+ {
+  "id": "REL-055",
+  "source": "kon-051",
+  "target": "kon-002",
+  "type": "Forged a spear for",
+  "label": "Forged a spear for"
+ },
+ {
+  "id": "REL-057",
+  "source": "kon-052",
+  "target": "kon-013",
+  "type": "Lieutenant serving",
+  "label": "Lieutenant serving"
+ },
+ {
+  "id": "REL-059",
+  "source": "kon-053",
+  "target": "kon-013",
+  "type": "Takes orders from",
+  "label": "Takes orders from"
+ },
+ {
+  "id": "REL-062",
+  "source": "kon-056",
+  "target": "kon-040",
+  "type": "Employer of",
+  "label": "Employer of"
+ },
+ {
+  "id": "REL-063",
+  "source": "kon-057",
+  "target": "kon-007",
+  "type": "Sought help from",
+  "label": "Sought help from"
+ },
+ {
+  "id": "REL-064",
+  "source": "kon-059",
+  "target": "kon-058",
+  "type": "Opposed",
+  "label": "Opposed"
+ },
+ {
+  "id": "REL-068",
+  "source": "kon-064",
+  "target": "kon-001",
+  "type": "Offered a job by",
+  "label": "Offered a job by"
+ },
+ {
+  "id": "REL-069",
+  "source": "kon-065",
+  "target": "kon-004",
+  "type": "Ancestor of",
+  "label": "Ancestor of"
  }
 ]
