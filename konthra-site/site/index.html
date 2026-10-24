@@ -1,83 +1,33 @@
-
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dramatis Personae · The Chronicles of Konthra</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dramatis Personae · The Chronicles of Konthra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="top">
-    <div class="lab">The Chronicles of Konthra</div>
-    <h1>Konthra</h1>
-    <p class="sub">One island. Countless stories.</p>
-
-    <nav class="world-nav" aria-label="Explore Konthra">
-      <a href="#world-map">Explore the island</a>
-      <a href="#dramatis-personae">Dramatis Personae</a>
-    </nav>
-  </header>
-
-  <main>
-    <section id="world-map" class="map-section"
-             aria-labelledby="map-heading">
-      <div class="map-heading">
-        <div class="lab">An atlas of the known world</div>
-        <h2 id="map-heading">The Island of Konthra</h2>
-        <p>Explore the land, its settlements and the people who call it home.</p>
-      </div>
-
-      <figure class="map-frame">
-        <img
-          src="assets/konthra-map.png"
-          alt="Map of Konthra showing its coastlines, forests, mountains, roads, rivers and surrounding islands."
-          class="konthra-map"
-          loading="eager">
-        <figcaption>The island of Konthra</figcaption>
-      </figure>
-    </section>
-
-    <section id="dramatis-personae" class="directory">
-      <div class="directory-heading">
-        <div class="lab">The people behind the story</div>
-        <h2>Dramatis Personae</h2>
-        <p>Records gathered by a scholar of Konthra, for those who walk its roads.</p>
-      </div>
-
-      <div class="bar">
-        <label class="lab" for="q">Search</label>
-        <input id="q" type="search"
-               placeholder="Name, alias, place…"
-               autocomplete="off">
-
-        <div id="chips" class="chips"
-             role="group" aria-label="Filters"></div>
-
-        <label class="lab" for="fac">Faction</label>
-        <select id="fac">
-          <option value="">All factions</option>
-        </select>
-
-        <span id="count" class="count" aria-live="polite"></span>
-      </div>
-
-      <div id="grid" class="grid"></div>
-
-      <p id="empty" class="empty" hidden>
-        No records match. Nothing has been approved for publication yet,
-        or your filters are too narrow.
-      </p>
-    </section>
-  </main>
-
-  <dialog id="modal" aria-labelledby="m-name"></dialog>
-
-  <script src="vendor/cytoscape.min.js"></script>
-  <script src="app.js"></script>
+<header class="top">
+  <div class="lab">The Chronicles of Konthra</div>
+  <h1>Dramatis Personae</h1>
+  <p class="sub">The people that make up the story</p>
+</header>
+<main>
+  <div class="bar">
+    <label class="lab" for="q">Search</label>
+    <input id="q" type="search" placeholder="Name, alias, place…" autocomplete="off">
+    <div id="chips" class="chips" role="group" aria-label="Filters"></div>
+    <label class="lab" for="fac">Faction</label>
+    <select id="fac"><option value="">All factions</option></select>
+    <span id="count" class="count" aria-live="polite"></span>
+  </div>
+  <div id="grid" class="grid"></div>
+  <p id="empty" class="empty" hidden>No records match. Nothing has been approved for publication yet, or your filters are too narrow.</p>
+</main>
+<dialog id="modal" aria-labelledby="m-name"></dialog>
+<script src="vendor/cytoscape.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
