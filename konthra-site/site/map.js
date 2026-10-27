@@ -4,30 +4,49 @@ const locations = {
     type: "Town",
     name: "Everny",
     description: "The effective capital of the North. Home to Yanrish and the Violet Shadows.",
-    npcs: []
+    npcs: [
+      { name: "Yanrish", id: "kon-007" },
+      { name: "Gibbons", id: "kon-015" },
+      { name: "Slick", id: "kon-013" },
+      { name: "Safar", id: "kon-014" },
+      { name: "Po", id: "kon-016" },
+      { name: "Khybor", id: "kon-052" },
+      { name: "Zyxal", id: "kon-053" },
+      { name: "Brokkr", id: "kon-051" }
+    ]
   },
 
   millbrook: {
     type: "Village",
     name: "Millbrook",
     description: "A town left in chaos. Maeve, the existing mayor, was overthrown in a riot, with no clear successor.",
-    npcs: []
+    npcs: [
+      { name: "Maeve", id: "kon-058" },
+      { name: "Silas Gillyweed", id: "kon-059" }
+    ]
   },
 
   "saltpetre-docks": {
     type: "Docks",
     name: "Saltpetre Docks",
     description: "The original sighting of Maelstrom, and the source of some of its more brutal attacks.",
-    npcs: []
+    npcs: [
+      { name: "Maelstrom", id: "kon-009" }
+    ]
   },
 
   unterveil: {
     type: "Village",
     name: "Unterveil",
     description: "Home to Maliphant, surrounded by a ring of charged Leechstone, preventing most magical forms of messaging or teleportation.",
-    npcs: []
+    npcs: [
+      { name: "Scraggles", id: "kon-042" },
+      { name: "Maliphant", id: "kon-008" },
+      { name: "Mistress Dill", id: "kon-056" }
+    ]
   }
 };
+
 
 const panel = document.querySelector("#location-panel");
 const nameField = document.querySelector("#location-name");
