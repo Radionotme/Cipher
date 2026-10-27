@@ -30,18 +30,75 @@
       <p>Explore the land, its settlements and the people who call it home.</p>
     </div>
 
-    <figure class="map-frame">
-      <img
-        src="assets/konthra-map.png"
-        alt="Map of Konthra, showing its coastlines, forests,
-             mountains, roads, rivers and surrounding islands."
-        class="konthra-map"
-        loading="eager"
-      >
-      <figcaption>
-        The island of Konthra
-      </figcaption>
-    </figure>
+
+<figure class="map-frame">
+  <div class="map-interactive">
+    <img
+      src="assets/konthra-map.png"
+      alt="Map of Konthra"
+      class="konthra-map"
+      loading="eager">
+
+
+<button class="map-marker"
+  style="left: 45%; top: 39%;"
+  data-location="unterveil"
+  aria-label="Unterveil: view settlement details">
+  <span class="marker-dot"></span>
+  <span class="marker-label">Unterveil</span>
+</button>
+
+<button class="map-marker"
+  style="left: 52%; top: 30%;"
+  data-location="millbrook"
+  aria-label="Millbrook: view settlement details">
+  <span class="marker-dot"></span>
+  <span class="marker-label">Millbrook</span>
+</button>
+
+<button class="map-marker"
+  style="left: 62%; top: 33%;"
+  data-location="saltpetre-docks"
+  aria-label="Saltpetre Docks: view settlement details">
+  <span class="marker-dot"></span>
+  <span class="marker-label">Saltpetre Docks</span>
+</button>
+
+<button class="map-marker"
+  style="left: 60%; top: 39%;"
+  data-location="everny"
+  aria-label="Everny: view settlement details">
+  <span class="marker-dot"></span>
+  <span class="marker-label">Everny</span>
+</button>
+
+  </div>
+
+  <figcaption>
+    Select a settlement to discover more about Konthra.
+  </figcaption>
+</figure>
+
+<aside id="location-panel" class="location-panel"
+       aria-labelledby="location-name" hidden>
+  <button id="location-close" class="location-close"
+          aria-label="Close settlement details">×</button>
+
+  <div class="location-kicker">
+    <span class="lab" id="location-type">Settlement</span>
+    <span class="location-region" id="location-region"></span>
+  </div>
+
+  <h3 id="location-name"></h3>
+  <p id="location-description"></p>
+
+  <section id="notable-section" class="notable-section" hidden>
+    <h4>Notable people</h4>
+    <div id="location-npcs" class="location-npcs"></div>
+  </section>
+</aside>
+
+
   </section>
 
   <section id="dramatis-personae" class="directory">
@@ -93,5 +150,6 @@
 <dialog id="modal" aria-labelledby="m-name"></dialog>
 <script src="vendor/cytoscape.min.js"></script>
 <script src="app.js"></script>
+<script src="map.js"></script>
 </body>
 </html>

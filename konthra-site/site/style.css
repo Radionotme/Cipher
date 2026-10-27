@@ -182,3 +182,152 @@ dialog::backdrop{background:#000c}
     transition: none;
   }
 }
+
+/* Interactive settlement map */
+.map-interactive {
+  position: relative;
+  line-height: 0;
+}
+
+.map-interactive .konthra-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 78vh;
+  object-fit: contain;
+}
+
+
+.map-marker {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 5px 10px 5px 7px;
+
+  /* Subtle marker, allowing the map to show through */
+  border: 1px solid rgb(212 176 106 / 45%);
+  border-radius: 999px;
+  background: rgb(20 18 26 / 1%);
+  color: rgb(212 176 106 / 1%);
+
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.marker-dot {
+  display: block;
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 7px rgb(212 176 106 / 60%);
+}
+
+.map-marker:hover,
+.map-marker:focus-visible,
+.map-marker[aria-expanded="true"] {
+  background: rgb(20 18 26 / 88%);
+  color: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgb(212 176 106 / 20%);
+  z-index: 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-marker {
+    transition: none;
+  }
+}
+
+
+  .marker-dot {
+    flex-basis: 8px;
+    width: 8px;
+    height: 8px;
+  }
+
+  .location-panel {
+    padding: 20px 16px;
+  }
+}
+
+.location-kicker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-right: 40px;
+}
+
+.location-region {
+  color: var(--muted);
+  font-size: 15px;
+  font-style: italic;
+}
+
+.location-panel h3 {
+  margin: 8px 0 12px;
+  color: var(--gold);
+  font-family: Cinzel, Georgia, serif;
+  font-size: clamp(26px, 4vw, 36px);
+}
+
+.location-panel > p {
+  max-width: 75ch;
+  margin: 0;
+  color: var(--text);
+  font-size: 19px;
+  line-height: 1.65;
+}
+
+.notable-section {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.notable-section h4 {
+  margin: 0 0 12px;
+  color: var(--gold);
+  font-family: Cinzel, Georgia, serif;
+  font-size: 17px;
+}
+
+.location-npcs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.npc-tag {
+  display: inline-block;
+  padding: 6px 13px;
+  border: 1px solid var(--violet);
+  border-radius: 999px;
+  background: #342941;
+  color: var(--vtext);
+  font: inherit;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.npc-tag:hover,
+.npc-tag:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
